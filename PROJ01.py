@@ -89,7 +89,6 @@ def capture_new_hand(camera, old_hand, image):
 # call this upon a hit to tell what the new card/hand is
 # the 'image' argument is either 'player_image.jpg' or 'dealer_image.jpg'
     new_hand = []
-    new_card = ''
     
     # Keep taking pictures if the correct number of cards isn't detected
     while len(new_hand) is not (len(old_hand)+1):
@@ -101,16 +100,15 @@ def capture_new_hand(camera, old_hand, image):
             #convert the image file to a GCP Vision-friendly type
             image = vision.types.Image(content=content)
             new_hand = detect_hand(image)
-            for card in player_hand:
-                if card not in old_hand:
-                    new_card = card
-    return new_card
+    return new_hand
 
 def sum_hand(hand):
     sum = 0
+    num_aces = 0
     for card in hand:
         if card == 'A':
             sum += 11
+            num_aces += 1
         elif card == 'K' or card == 'Q' or card == 'J':
             sum += 10
         else:
@@ -125,17 +123,56 @@ def count_cards(count, new_cards):
             count -= 1
     return count
 
-def hit(player_hand):
+def hit_or_stand(player_hand, dealer_hand):
 # return True if player should hit
+    #TO-DO: WRITE THIS FUNCTION
+    print("Decide if player should hit.")
     return false
 
-def player_bust():
-    # do some stuff if player goes bust
-    print("I went bust")
+def dealer_turn(dealer_hand):
+# return the final dealer_hand or -1 if the dealer went bust/21 was achieved
+    print("Dealer's turn")
+    time.sleep(3)
+    # First, the dealer's face-down card is flipped
+    dealer_hand = capture_new_hand(camera, dealer_hand, 'dealer_image.jpg')
     
-def dealer_bust():
-    # do some stuff if dealer goes bust
-    print("Dealer bust")
+    # Next, the dealer draws cards until the sum >= 17
+    while sum_hand(dealer_hand) < 17:
+        print("Dealer needs a new card")
+        time.sleep(3)
+        dealer_hand = capture_new_hand(camera, dealer_hand, 'dealer_image.jpg')
+        print("New card successfully detected")
+        time.sleep(1)
+        
+    return dealer_hand   
+
+def bet_low():
+    # do some stuff for a low bet
+    print("Spitting out min bet")
+
+def bet_medium():
+    # do some stuff for a "normal" bet
+    print("Betting normally")
+    
+def bet_high():
+    # do some stuff for a high bet
+    print("BETTING LOTS OF MONEY")
+    
+def won_round():
+    # do some stuff if player won (or if there's a standoff)
+    print("I won")
+    
+def lost_round():
+    # do some stuff if player goes bust or loses
+    print("I lost")
+    
+def hit():
+    # do some stuff if player wants to hit
+    print("GIVE ME A CARD")
+    
+def stand():
+    # do some stuff if player wants to stand
+    print("I don't want a card")
     
 def main():
     
@@ -147,16 +184,45 @@ def main():
 #    pg.init()
 #    pg.mixer.init()  
 
-    #indicate that the first hand has been dealt with a cap touch
     while True:
 
-        if crickit.touch_1.value==1:
+        if crickit.touch_1.value==1: # cap touch indicates that a round has been dealt
+            print("Place your bet")
+            # place a bet depending on the card count.
+            # TO-DO: FIX THIS!
+            if count == 0:
+                bet_medium()
+            elif count < 0:
+                bet_low()
+            else:
+                bet_high()
+                
+            # determine what the hands are. player has 2 cards, dealer has 1 (+1 face-down one)
             [player_hand, dealer_hand] = capture_initial_hands(camera)
             player_sum = sum_hand(player_hand)
             dealer_sum = sum_hand(dealer_hand)
-            # PLACEHOLDER: decide whether to hit or stand. update player_hand
-            # PLACEHOLDER: dealer gets more cards. update dealer_hand
-             
+ 
+            # player's turn
+            while hit_or_stand(player_hand):
+                hit()
+                time.sleep(3)
+                player_hand = capture_new_hand(camera, player_hand, 'player_image.jpg')
+
+            dealer_hand = dealer_turn()
+            
+            if dealer_hand < 21 and player_hand < 21:
+                if sum_hand(player_hand) >= sum_hand(dealer_hand):
+                    won_round()
+                else:
+                    lost_round()
+            elif player_hand == 21 and dealer_hand != 21:
+                won_round()
+            elif player_hand == 21 and dealer_hand == 21: # standoff
+                print("Standoff")
+            else:
+                lost_round()
+                            
+            # updating count should be the last thing done in the round
             count = count_cards(count, player_hand + dealer_hand)
             
 
