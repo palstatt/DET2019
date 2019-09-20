@@ -125,9 +125,28 @@ def count_cards(count, new_cards):
 
 def hit_or_stand(player_hand, dealer_hand):
 # return True if player should hit
-    #TO-DO: WRITE THIS FUNCTION
-    print("Decide if player should hit.")
-    return false
+    dealer_card = dealer_hand[0]
+    player_sum = sum_hand(player_hand)
+    dealer_sum = sum_hand(dealer_hand) #this is actually just the dealer_card
+    # Stand conditions
+    if player_sum >= 17:
+        return False
+    elif dealer_sum <= 6 and player_sum >= 13:
+        return False
+    
+    # Hit conditions (from casinobonusking.com)
+    elif dealer_card == '7' or dealer_card == '8' or dealer_card == '9' or dealer_card == '10' or dealer_card == 'A':
+        if player_sum == 8 or (player_sum >= 12 and player_sum <= 16):
+            return True
+        elif dealer_card == 'A' and player_sum == 11:
+            return True
+        elif dealer_card == '10' and player_sum == 10:
+            return True
+        elif (dealer_card == '7' or dealer_card == '8' or dealer_card == '9') and player_sum == 9:
+            return True
+    
+    else:
+        return False
 
 def dealer_turn(dealer_hand):
 # return the final dealer_hand or -1 if the dealer went bust/21 was achieved
