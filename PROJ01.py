@@ -85,6 +85,27 @@ def capture_initial_hands(camera):
         
     return [player_hand, dealer_hand]
 
+def capture_new_hand(camera, old_hand, image):
+# call this upon a hit to tell what the new card/hand is
+# the 'image' argument is either 'player_image.jpg' or 'dealer_image.jpg'
+    new_hand = []
+    new_card = ''
+    
+    # Keep taking pictures if the correct number of cards isn't detected
+    while len(new_hand) is not (len(old_hand)+1):
+        takephoto(camera) # Capture a picture
+
+        with open(image, 'rb') as image_file:
+            #read the image file
+            content = image_file.read()
+            #convert the image file to a GCP Vision-friendly type
+            image = vision.types.Image(content=content)
+            new_hand = detect_hand(image)
+            for card in player_hand:
+                if card not in old_hand:
+                    new_card = card
+    return new_card
+
 def sum_hand(hand):
     sum = 0
     for card in hand:
@@ -96,14 +117,26 @@ def sum_hand(hand):
             sum += int(card)
     return sum
 
-def count_cards(count, player_hand, dealer_hand):
-    for card in player_hand:
+def count_cards(count, new_cards):
+    for card in new_cards:
         if card == '2' or card == '3' or card == '4' or card == '5' or card == '6':
             count += 1
         elif card == '10' or card == 'J' or card == 'Q' or card == 'K' or card == 'A':
             count -= 1
     return count
 
+def hit(player_hand):
+# return True if player should hit
+    return false
+
+def player_bust():
+    # do some stuff if player goes bust
+    print("I went bust")
+    
+def dealer_bust():
+    # do some stuff if dealer goes bust
+    print("Dealer bust")
+    
 def main():
     
     #generate a camera object for the takephoto function to
@@ -121,7 +154,12 @@ def main():
             [player_hand, dealer_hand] = capture_initial_hands(camera)
             player_sum = sum_hand(player_hand)
             dealer_sum = sum_hand(dealer_hand)
-            count = count_cards(count, player_hand, dealer_hand)
+            # PLACEHOLDER: decide whether to hit or stand. update player_hand
+            # PLACEHOLDER: dealer gets more cards. update dealer_hand
+             
+            count = count_cards(count, player_hand + dealer_hand)
+            
+
 
     
 if __name__ == '__main__':
