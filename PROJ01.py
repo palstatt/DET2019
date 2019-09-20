@@ -94,40 +94,10 @@ def main():
     #setup our pygame mixer to play audio in subsequent stages
 #    pg.init()
 #    pg.mixer.init()  
-    while True:
-    #indicate that a new hand has been dealt with a cap touch
-        if crickit.touch_1.value==1:
-            [player_hand, dealer_hand ] = capture_initial_hands(camera)
-            for card in player_hand:
-                print(card)
-            for card in dealer_hand:
-                print(card)
-            # Keep taking pictures if the correct number of cards isn't detected
-'''            while len(player_hand) is not 2 or len(dealer_hand) is not 1:
-                takephoto(camera) # Capture a picture
 
-                with open('player_image.jpg', 'rb') as image_file:
-                    #read the image file
-                    content = image_file.read()
-                    #convert the image file to a GCP Vision-friendly type
-                    image = vision.types.Image(content=content)
-                    player_hand = detect_hand(image)
-                    print("Player hand: ")
-                    for card in player_hand:
-                        print(card)
-                    print("Number of player cards: " + str(len(player_hand)))
-                    
-                with open('dealer_image.jpg', 'rb') as image_file:
-                    #read the image file
-                    content = image_file.read()
-                    #convert the image file to a GCP Vision-friendly type
-                    image = vision.types.Image(content=content)
-                    dealer_hand = detect_hand(image)
-                    print("Dealer hand: ")
-                    for card in dealer_hand:
-                        print(card)
-                    print("Number of dealer cards: " + str(len(dealer_hand)))
- '''           
-      
+    #indicate that the first hand has been dealt with a cap touch
+    if crickit.touch_1.value==1:
+        [player_hand, dealer_hand ] = capture_initial_hands(camera)
+     
 if __name__ == '__main__':
         main()    
