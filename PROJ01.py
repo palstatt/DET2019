@@ -22,7 +22,7 @@ client = vision.ImageAnnotatorClient()
 image = 'image.jpg'
 
 def takephoto(camera):
-    
+# status: TESTED    
     # this triggers an on-screen preview, so you know what you're photographing!
     camera.start_preview() 
     sleep(.5)                   #give it a pause so you can adjust if needed
@@ -32,12 +32,14 @@ def takephoto(camera):
     camera.stop_preview()       #stop the preview
 
 def crop(image, coords, new_image):
+# status: TESTED
     image_obj = Image.open(image)
     cropped_image = image_obj.crop(coords)
     cropped_image.save(new_image)
     cropped_image.show()
     
 def detect_hand(image):
+# status: TESTED
     """Detects hand of cards in the image."""
     validCards = ['A','K','Q','J','10','9','8','7','6','5','4','3','2']
     hand = []
@@ -52,6 +54,7 @@ def detect_hand(image):
     return hand
 
 def capture_initial_hands(camera):
+# status: TESTED
     player_hand = []
     dealer_hand = []
             
@@ -86,6 +89,7 @@ def capture_initial_hands(camera):
     return [player_hand, dealer_hand]
 
 def capture_new_hand(camera, old_hand, image):
+# status: UNTESTED
 # call this upon a hit to tell what the new card/hand is
 # the 'image' argument is either 'player_image.jpg' or 'dealer_image.jpg'
     new_hand = []
@@ -103,6 +107,7 @@ def capture_new_hand(camera, old_hand, image):
     return new_hand
 
 def sum_hand(hand):
+# status: TESTED
     sum = 0
     num_aces = 0
     for card in hand:
@@ -116,6 +121,7 @@ def sum_hand(hand):
     return sum
 
 def count_cards(count, new_cards):
+# status: TESTED
     for card in new_cards:
         if card == '2' or card == '3' or card == '4' or card == '5' or card == '6':
             count += 1
@@ -124,6 +130,7 @@ def count_cards(count, new_cards):
     return count
 
 def hit_or_stand(player_hand, dealer_hand):
+# status: UNTESTED
 # return True if player should hit
     dealer_card = dealer_hand[0]
     player_sum = sum_hand(player_hand)
@@ -149,10 +156,10 @@ def hit_or_stand(player_hand, dealer_hand):
         return False
 
 def dealer_turn(dealer_hand):
-# return the final dealer_hand or -1 if the dealer went bust/21 was achieved
-    print("Dealer's turn")
-    time.sleep(3)
-    # First, the dealer's face-down card is flipped
+# status: UNTESTED
+# return the final dealer_hand
+
+    # First, the dealer's face-down card is flipped, and the new hand is captured
     dealer_hand = capture_new_hand(camera, dealer_hand, 'dealer_image.jpg')
     
     # Next, the dealer draws cards until the sum >= 17
@@ -194,14 +201,13 @@ def stand():
     print("I don't want a card")
     
 def main():
+# assumptions:
+# - a player can only hit or stand
+# - there's no such thing as a soft hand
+
+    camera = picamera.PiCamera()   #generate a camera object
     
-    #generate a camera object for the takephoto function to
-    #work with
-    camera = picamera.PiCamera()      
-    count = 0 # card count for determining what bet to place
-    #setup our pygame mixer to play audio in subsequent stages
-#    pg.init()
-#    pg.mixer.init()  
+    count = 0 # card count for determining what bet to place 
 
     while True:
 
@@ -215,7 +221,9 @@ def main():
                 bet_low()
             else:
                 bet_high()
-                
+            
+            print("Deal cards")
+            time.sleep(5)
             # determine what the hands are. player has 2 cards, dealer has 1 (+1 face-down one)
             [player_hand, dealer_hand] = capture_initial_hands(camera)
             player_sum = sum_hand(player_hand)
@@ -226,9 +234,14 @@ def main():
                 hit()
                 time.sleep(3)
                 player_hand = capture_new_hand(camera, player_hand, 'player_image.jpg')
-
+            
+            stand()
+            
+            print("Dealer's turn")
+            time.sleep(3)
             dealer_hand = dealer_turn()
             
+            print("Who won this round???")
             if dealer_hand < 21 and player_hand < 21:
                 if sum_hand(player_hand) >= sum_hand(dealer_hand):
                     won_round()
