@@ -84,20 +84,45 @@ def capture_initial_hands(camera):
         time.sleep(0.1)
         
     return [player_hand, dealer_hand]
-    
+
+def sum_hand(hand):
+    sum = 0
+    for card in hand:
+        if card == 'A':
+            sum += 11
+        elif card == 'K' or card == 'Q' or card == 'J':
+            sum += 10
+        else:
+            sum += int(card)
+    return sum
+
+def count_cards(count, player_hand, dealer_hand):
+    for card in player_hand:
+        if card == '2' or card == '3' or card == '4' or card == '5' or card == '6':
+            count += 1
+        elif card == '10' or card == 'J' or card == 'Q' or card == 'K' or card == 'A':
+            count -= 1
+    return count
+
 def main():
     
     #generate a camera object for the takephoto function to
     #work with
     camera = picamera.PiCamera()      
-        
+    count = 0 # card count for determining what bet to place
     #setup our pygame mixer to play audio in subsequent stages
 #    pg.init()
 #    pg.mixer.init()  
 
     #indicate that the first hand has been dealt with a cap touch
-    if crickit.touch_1.value==1:
-        [player_hand, dealer_hand ] = capture_initial_hands(camera)
-     
+    while True:
+
+        if crickit.touch_1.value==1:
+            [player_hand, dealer_hand] = capture_initial_hands(camera)
+            player_sum = sum_hand(player_hand)
+            dealer_sum = sum_hand(dealer_hand)
+            count = count_cards(count, player_hand, dealer_hand)
+
+    
 if __name__ == '__main__':
         main()    
