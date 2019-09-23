@@ -1,0 +1,7 @@
+det_google_cloud.json
+
+**/processed_images
+
+*.jpg
+
+.DS_Store
