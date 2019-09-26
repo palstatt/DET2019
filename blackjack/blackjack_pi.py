@@ -1,13 +1,4 @@
-import numpy as np
-import random
-
-FACE_CARDS = ['J', 'Q', 'K']
-CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', '10']
-ONE_SUIT = ['A', '2', '3', '4', '5', '6', '7',
-            '8', '9', '10', 'J', 'Q', 'K']
-
-
-class BlackjackGame:
+class BlackjackPi:
 
     player_hand = []
     dealer_hand = []
