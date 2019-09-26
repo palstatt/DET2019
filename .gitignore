@@ -5,3 +5,5 @@ det_google_cloud.json
 *.jpg
 
 .DS_Store
+
+__pycache__
