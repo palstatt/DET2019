@@ -8,13 +8,15 @@ import sys
 import re
 import socket
 from process_image import process_image
-
+from blackjack.blackjack_pi import BlackjackPi
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./det_google_cloud.json"
 
 client = vision.ImageAnnotatorClient()
 
 image = 'test_image_hi.jpg'
+
+blackjack = BlackjackPi()
 
 
 def detect_hand(image):
@@ -50,7 +52,8 @@ def main():
     global image
 
     dealer_image, player_image, processed_image = process_image(image)
-    with open(player_image, 'rb') as image_file:
+
+    with open(dealer_image, 'rb') as image_file:
         content = image_file.read()
 
     image = vision.types.Image(content=content)
@@ -59,6 +62,20 @@ def main():
     for card in dealer_hand:
         print(card)
         print("Number of player cards: " + str(len(dealer_hand)))
+
+    with open(player_image, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.types.Image(content=content)
+    player_hand = detect_hand(image)
+    print("Player hand: ")
+    for card in player_hand:
+        print(card)
+        print("Number of player cards: " + str(len(player_hand)))
+
+    blackjack.deal_cards(player_hand, 'A')
+
+    print(blackjack.best_bet(), blackjack.best_move())
 
 
 if __name__ == '__main__':

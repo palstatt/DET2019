@@ -43,10 +43,10 @@ class BlackjackPi:
         self.dealer_soft_bust = False
         self.dealer_blackjack = False
 
-        for card in player_hand:
+        for card in self.player_hand:
             self.calc_total(card, True)
 
-        for card in dealer_hand:
+        for card in self.dealer_hand:
             self.calc_total(card, False)
 
         self.check_blackjack()
@@ -69,9 +69,9 @@ class BlackjackPi:
 
     def update_count(self, card):
         if card in FACE_CARDS or card == 'A':
-            self.card_count -= 1
+            self.current_count -= 1
         elif int(card) in range(2, 6):
-            self.card_count += 1
+            self.current_count += 1
 
     def check_bust(self):
         if self.player_total > 21:
