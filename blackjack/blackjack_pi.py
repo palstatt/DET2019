@@ -1,3 +1,7 @@
+FACE_CARDS = ['J', 'Q', 'K']
+CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', '10']
+
+
 class BlackjackPi:
 
     player_hand = []
