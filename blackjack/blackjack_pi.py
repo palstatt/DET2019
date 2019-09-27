@@ -4,6 +4,8 @@ CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 class BlackjackPi:
 
+    current_count = 0
+
     player_hand = []
     dealer_hand = []
 
@@ -65,6 +67,12 @@ class BlackjackPi:
         else:
             return (int(card), False)
 
+    def update_count(self, card):
+        if card in FACE_CARDS or card == 'A':
+            self.card_count -= 1
+        elif int(card) in range(2, 6):
+            self.card_count += 1
+
     def check_bust(self):
         if self.player_total > 21:
             self.player_bust = True
@@ -90,6 +98,7 @@ class BlackjackPi:
                 self.dealer_soft_total += 11
             else:
                 self.dealer_soft_total += val
+        self.update_count(card)
         self.check_bust()
 
     def check_blackjack(self):
@@ -139,6 +148,15 @@ class BlackjackPi:
         player_best = self.player_total if self.player_soft_total > 21 else self.player_soft_total
         dealer_best = self.dealer_total if self.dealer_soft_total > 21 else self.dealer_soft_total
         return (player_best, dealer_best)
+
+    def best_bet(self):
+        if self.current_count > 0:
+            return 'high'
+        else:
+            return 'low'
+
+    def get_current_count(self):
+        return self.current_count
 
     def __str__(self):
         return f"""
